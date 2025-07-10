@@ -17,10 +17,6 @@ const catchAsync_1 = __importDefault(require("../../utils/catchAsync"));
 const contact_service_1 = require("./contact.service");
 const sendResponse_1 = __importDefault(require("../../utils/sendResponse"));
 const createcontact = (0, catchAsync_1.default)((req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    var _a;
-    const userId = (_a = req.user) === null || _a === void 0 ? void 0 : _a.userId;
-    req.body.userId = userId;
-    // console.log('======', req.body);
     const result = yield contact_service_1.contactService.createContact(req.body);
     (0, sendResponse_1.default)(res, {
         statusCode: 200,

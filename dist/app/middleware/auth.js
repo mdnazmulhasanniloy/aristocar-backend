@@ -33,7 +33,8 @@ const auth = (...userRoles) => {
             throw new AppError_1.default(http_status_1.default.UNAUTHORIZED, 'unauthorized');
         }
         const { role, userId } = decode;
-        const isUserExist = user_models_1.User.IsUserExistId(userId);
+        // const isUserExist = User.IsUserExistId(userId);
+        const isUserExist = yield user_models_1.User.findById(userId);
         if (!isUserExist) {
             throw new AppError_1.default(http_status_1.default.NOT_FOUND, 'user not found');
         }

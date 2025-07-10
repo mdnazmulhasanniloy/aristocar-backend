@@ -17,6 +17,7 @@ const catchAsync_1 = __importDefault(require("../../utils/catchAsync"));
 const payments_service_1 = require("./payments.service");
 const sendResponse_1 = __importDefault(require("../../utils/sendResponse"));
 const http_status_1 = __importDefault(require("http-status"));
+const config_1 = __importDefault(require("../../config"));
 const checkout = (0, catchAsync_1.default)((req, res) => __awaiter(void 0, void 0, void 0, function* () {
     req.body.user = req.user.userId;
     const result = yield payments_service_1.paymentsService.checkout(req.body);
@@ -28,21 +29,17 @@ const checkout = (0, catchAsync_1.default)((req, res) => __awaiter(void 0, void 
     });
 }));
 const confirmPayment = (0, catchAsync_1.default)((req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    console.log('req.query', req === null || req === void 0 ? void 0 : req.query);
     const results = yield payments_service_1.paymentsService.confirmPayment(req === null || req === void 0 ? void 0 : req.query);
-    // res.redirect(`${config.success_url}?subscriptionId=${results?.subscription}`);
-    // sendResponse(res, {
-    //   success: true,
-    //   statusCode: httpStatus.OK,
-    //   data: result,
-    //   message: 'payment successful',
-    // });
-    const result = yield payments_service_1.paymentsService.generateInvoice(req === null || req === void 0 ? void 0 : req.query.paymentId);
-    (0, sendResponse_1.default)(res, {
-        success: true,
-        statusCode: http_status_1.default.OK,
-        data: result,
-        message: 'Payment retrieved successfully',
-    });
+    res.redirect(`${config_1.default.success_url}?subscriptionId=${results === null || results === void 0 ? void 0 : results.subscription}&paymentId=${results === null || results === void 0 ? void 0 : results._id}`);
+    // console.log('req.query.paymentId', req?.query);
+    //   const result = await paymentsService.generateInvoice(req?.query.paymentId);
+    //   sendResponse(res, {
+    //     success: true,
+    //     statusCode: httpStatus.OK,
+    //     data: result,
+    //     message: 'Payment retrieved successfully',
+    //   });
 }));
 const dashboardData = (0, catchAsync_1.default)((req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const result = yield payments_service_1.paymentsService.dashboardData(req === null || req === void 0 ? void 0 : req.query);

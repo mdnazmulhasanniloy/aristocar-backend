@@ -65,12 +65,12 @@ const getAllcars = (query) => __awaiter(void 0, void 0, void 0, function* () {
             .populate('model')
             .populate('creatorID');
         // meta = { total: data.length };
-        const carsModel = new QueryBuilder_1.default(cars_models_1.CarModel.find({}), {});
+        const carsModel = new QueryBuilder_1.default(cars_models_1.CarModel.find({ isDeleted: false }), {});
         meta = yield carsModel.countTotal();
     }
     else {
         const { priceRange, mileageRange, YearOfManufactureRange } = query, allQuery = __rest(query, ["priceRange", "mileageRange", "YearOfManufactureRange"]);
-        const carsModel = new QueryBuilder_1.default(cars_models_1.CarModel.find({}), allQuery)
+        const carsModel = new QueryBuilder_1.default(cars_models_1.CarModel.find({ isDeleted: false }), allQuery)
             .search(['name'])
             .conditionalFilter()
             .sort()
@@ -267,6 +267,26 @@ const getMostWantedCars = () => __awaiter(void 0, void 0, void 0, function* () {
     });
     return mostWantedCars;
 });
+// Get similar cars based on model, brand, or price range
+const getSimilarCars = (id) => __awaiter(void 0, void 0, void 0, function* () {
+    const car = yield cars_models_1.CarModel.findById(id);
+    if (!car)
+        return "Car not found";
+    const query = {
+        $or: [
+            { model: car.model },
+            { brand: car.brand },
+            { price: { $gte: car.price - 2000, $lte: car.price + 2000 } }
+        ],
+        _id: { $ne: id }
+    };
+    const similarCars = yield cars_models_1.CarModel.find(query)
+        .populate('brand')
+        .populate('model')
+        .populate('creatorID')
+        .limit(2);
+    return similarCars;
+});
 exports.carsService = {
     createcars,
     getAllcars,
@@ -278,4 +298,5 @@ exports.carsService = {
     getcarsByCreatorId,
     getBestDeals,
     getMostWantedCars,
+    getSimilarCars
 };

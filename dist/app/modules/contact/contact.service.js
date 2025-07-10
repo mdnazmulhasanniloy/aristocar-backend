@@ -22,17 +22,17 @@ const mailSender_1 = require("../../utils/mailSender");
 const fs_1 = __importDefault(require("fs"));
 const config_1 = __importDefault(require("../../config"));
 const createContact = (payload) => __awaiter(void 0, void 0, void 0, function* () {
-    const emailPath = path_1.default.join(__dirname, '../../../../public/view/supportEmail.html');
-    // If 'isApproved' is set to true, send an email
-    yield (0, mailSender_1.sendEmail)(config_1.default.supportemail, 'Got a support message from Aristocar', fs_1.default
-        .readFileSync(emailPath, 'utf8')
-        .replace('{{name}}', (payload === null || payload === void 0 ? void 0 : payload.firstName) + ' ' + (payload === null || payload === void 0 ? void 0 : payload.lastName))
-        .replace('{{email}}', payload === null || payload === void 0 ? void 0 : payload.email)
-        .replace('{{details}}', payload === null || payload === void 0 ? void 0 : payload.description));
     const contacts = yield contact_models_1.default.create(payload);
     if (!contacts) {
         throw new AppError_1.default(http_status_1.default.INTERNAL_SERVER_ERROR, 'Failed to create contact');
     }
+    const emailTemplatePath = path_1.default.join(__dirname, '../../../../public/view/supportEmail.html');
+    const emailTemplate = fs_1.default.readFileSync(emailTemplatePath, 'utf8');
+    const emailContent = emailTemplate
+        .replace('{{name}}', `${payload === null || payload === void 0 ? void 0 : payload.firstName} ${payload === null || payload === void 0 ? void 0 : payload.lastName}`)
+        .replace('{{email}}', payload === null || payload === void 0 ? void 0 : payload.email)
+        .replace('{{details}}', payload === null || payload === void 0 ? void 0 : payload.description);
+    yield (0, mailSender_1.sendEmail)(config_1.default.supportemail, 'Got a support message from Aristocar', emailContent);
     return contacts;
 });
 const getAllcontact = (query) => __awaiter(void 0, void 0, void 0, function* () {

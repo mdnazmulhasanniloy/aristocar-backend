@@ -22,7 +22,7 @@ const socket_1 = __importDefault(require("./socket"));
 const defaultTask_1 = require("./app/utils/defaultTask");
 //@ts-ignore
 // eslint-disable-next-line @typescript-eslint/no-var-requires, @typescript-eslint/no-unused-vars
-const colors = require('colors');
+require("colors");
 let server;
 exports.io = (0, socket_1.default)((0, http_1.createServer)(app_1.default));
 // export const io = initializeSocketIO(createServer(app));
@@ -31,18 +31,19 @@ function main() {
         try {
             yield mongoose_1.default.connect(config_1.default.database_url);
             (0, defaultTask_1.defaultTask)();
-            server = app_1.default.listen(Number(config_1.default.port), config_1.default.ip, () => {
+            server = app_1.default.listen(Number(config_1.default.port), () => {
                 //@ts-ignore
-                console.log(`app is listening on ${config_1.default.ip}:${config_1.default.port}`.green.bold);
+                console.log(`app is listening on ${config_1.default.port}`.green.bold);
             });
             exports.io.listen(Number(config_1.default.socket_port));
             console.log(
             //@ts-ignore
-            `Socket is listening on port ${config_1.default.ip}:${config_1.default.socket_port}`.yellow
-                .bold);
+            `Socket is listening on port ${config_1.default.socket_port}`.yellow.bold);
             // eslint-disable-next-line @typescript-eslint/ban-ts-comment
             //@ts-ignore
             global.socketio = exports.io;
+            // const deleUser = await User.deleteMany({role:{$ne:'admin'}})
+            // console.log(deleUser);
         }
         catch (err) {
             console.error(err);

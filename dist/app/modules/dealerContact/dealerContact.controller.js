@@ -62,7 +62,7 @@ const getDealerContact = (0, catchAsync_1.default)((req, res) => __awaiter(void 
     if (!userId) {
         throw new AppError_1.default(http_status_1.default.BAD_REQUEST, 'User not found');
     }
-    const count = yield dealerContact_service_1.dealerContactService.getDealerContact(userId);
+    const count = yield dealerContact_service_1.dealerContactService.getDealerContact(userId, req.query);
     (0, sendResponse_1.default)(res, {
         statusCode: http_status_1.default.OK,
         success: true,

@@ -37,6 +37,22 @@ const createUser = (0, catchAsync_1.default)((req, res) => __awaiter(void 0, voi
         data: { user: result, otpToken: sendOtp },
     });
 }));
+const createUserAdmin = (0, catchAsync_1.default)((req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    // return res.send({data: req.body})
+    if (req.file) {
+        req.body.image = yield (0, s3_1.uploadToS3)({
+            file: req.file, // Ensure it's req.file for a single file
+            fileName: `images/user/profile/${Math.floor(100000 + Math.random() * 900000)}`,
+        });
+    }
+    const result = yield user_service_1.userService.createUserAdminByDb(req.body);
+    (0, sendResponse_1.default)(res, {
+        statusCode: http_status_1.default.OK,
+        success: true,
+        message: 'User created successfully',
+        data: { user: result },
+    });
+}));
 const getAllUser = (0, catchAsync_1.default)((req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const result = yield user_service_1.userService.getAllUser(req.query);
     (0, sendResponse_1.default)(res, {
@@ -174,4 +190,6 @@ exports.userController = {
     handleDealerRequest,
     getAllUserByYearandmonth,
     getAllDealers,
+    //
+    createUserAdmin,
 };

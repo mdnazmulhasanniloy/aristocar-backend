@@ -26,7 +26,7 @@ const createCheckoutSession = (payload) => __awaiter(void 0, void 0, void 0, fun
         line_items: [
             {
                 price_data: {
-                    currency: 'usd',
+                    currency: 'eur',
                     product_data: {
                         name: (_a = payload === null || payload === void 0 ? void 0 : payload.product) === null || _a === void 0 ? void 0 : _a.name,
                     },
@@ -35,7 +35,7 @@ const createCheckoutSession = (payload) => __awaiter(void 0, void 0, void 0, fun
                 quantity: (_c = payload.product) === null || _c === void 0 ? void 0 : _c.quantity,
             },
         ],
-        success_url: `${config_1.default.success_url}?sessionId={CHECKOUT_SESSION_ID}&paymentId=${payload === null || payload === void 0 ? void 0 : payload.paymentId}`,
+        success_url: `${config_1.default === null || config_1.default === void 0 ? void 0 : config_1.default.webhook_url}?sessionId={CHECKOUT_SESSION_ID}&paymentId=${payload === null || payload === void 0 ? void 0 : payload.paymentId}`,
         cancel_url: config_1.default === null || config_1.default === void 0 ? void 0 : config_1.default.cancel_url,
         // `${config.server_url}/payments/cancel?paymentId=${payload?.paymentId}`,
         mode: 'payment',

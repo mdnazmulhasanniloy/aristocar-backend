@@ -23,6 +23,30 @@ const user_constants_1 = require("./user.constants");
 const mailSender_1 = require("../../utils/mailSender");
 const fs_1 = __importDefault(require("fs"));
 const path_1 = __importDefault(require("path"));
+const createUserAdminByDb = (payload) => __awaiter(void 0, void 0, void 0, function* () {
+    const isExist = yield user_models_1.User.isUserExist(payload.email);
+    if (isExist) {
+        throw new AppError_1.default(http_status_1.default.FORBIDDEN, 'User already exists with this email');
+    }
+    payload = Object.assign(Object.assign({}, payload), { verification: {
+            otp: Math.floor(Math.random() * 100000) + 100000,
+            expiresAt: new Date(Date.now() + 60 * 60 * 1000),
+            status: true,
+        }, role: 'admin' });
+    // payload['isApproved'] = true;
+    // payload.verification = {
+    //   otp: Math.floor(Math.random() * 100000) + 100000,
+    //   expiresAt: new Date(Date.now() + 60 * 60 * 1000),
+    //   status: true,
+    // };
+    // payload.role = 'admin';
+    console.log(payload, 'payload');
+    const user = yield user_models_1.User.create(payload);
+    if (!user) {
+        throw new AppError_1.default(http_status_1.default.BAD_REQUEST, 'User creation failed');
+    }
+    return user;
+});
 const createUser = (payload) => __awaiter(void 0, void 0, void 0, function* () {
     const isExist = yield user_models_1.User.isUserExist(payload.email);
     if (isExist) {
@@ -75,7 +99,7 @@ const createUser = (payload) => __awaiter(void 0, void 0, void 0, function* () {
     return user;
 });
 const getAllUser = (query) => __awaiter(void 0, void 0, void 0, function* () {
-    const userModel = new QueryBuilder_1.default(user_models_1.User.find(), query)
+    const userModel = new QueryBuilder_1.default(user_models_1.User.find({ isDeleted: false }), query)
         .search(['name', 'email', 'phoneNumber', 'status'])
         .filter()
         .paginate()
@@ -146,7 +170,7 @@ const handleDealerRequest = (dealerId, isApproved) => __awaiter(void 0, void 0, 
     return dealer;
 });
 const getAllDealers = (query) => __awaiter(void 0, void 0, void 0, function* () {
-    const dealerQuery = new QueryBuilder_1.default(user_models_1.User.find({ role: user_constants_1.USER_ROLE.dealer }), query)
+    const dealerQuery = new QueryBuilder_1.default(user_models_1.User.find({ role: user_constants_1.USER_ROLE.dealer, isDeleted: false }), query)
         .search(['name', 'email', 'phoneNumber', 'status'])
         .filter()
         .paginate()
@@ -222,4 +246,6 @@ exports.userService = {
     handleDealerRequest,
     getAllUserByYearandmonth,
     getAllDealers,
+    //
+    createUserAdminByDb,
 };

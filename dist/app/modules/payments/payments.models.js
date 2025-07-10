@@ -51,10 +51,10 @@ PaymentSchema.pre('findOne', function (next) {
     this.find({ isDeleted: { $ne: true } });
     next();
 });
-PaymentSchema.pre('aggregate', function (next) {
-    this.pipeline().unshift({ $match: { isDeleted: { $ne: true } } });
-    next();
-});
+// PaymentSchema.pre('aggregate', function (next) {
+//   this.pipeline().unshift({ $match: { isDeleted: { $ne: true } } });
+//   next();
+// });
 // Create and export the model
 const Payment = (0, mongoose_1.model)('Payment', PaymentSchema);
 exports.default = Payment;

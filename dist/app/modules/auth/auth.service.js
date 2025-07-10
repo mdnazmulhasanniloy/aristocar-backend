@@ -29,11 +29,13 @@ const user_constants_1 = require("../user/user.constants");
 // Login
 const login = (payload) => __awaiter(void 0, void 0, void 0, function* () {
     var _a, _b, _c;
-    let user = yield user_models_1.User.isUserExist(payload === null || payload === void 0 ? void 0 : payload.email);
+    let user = yield user_models_1.User.findOne({ email: payload === null || payload === void 0 ? void 0 : payload.email });
+    console.log('user', user);
     if (!user) {
         if (payload.isGoogleLogin) {
             user = yield user_models_1.User.create({
                 email: payload.email,
+                name: payload.name,
                 isGoogleLogin: true,
                 password: '',
                 role: user_constants_1.USER_ROLE.user,
@@ -43,7 +45,6 @@ const login = (payload) => __awaiter(void 0, void 0, void 0, function* () {
             });
         }
         else {
-            // If not a Google login and user not found, throw error
             throw new AppError_1.default(http_status_1.default.NOT_FOUND, 'User not found');
         }
     }
@@ -111,7 +112,7 @@ const changePassword = (id, payload) => __awaiter(void 0, void 0, void 0, functi
 });
 // Forgot password
 const forgotPassword = (email) => __awaiter(void 0, void 0, void 0, function* () {
-    const user = yield user_models_1.User.isUserExist(email);
+    const user = yield user_models_1.User.findOne({ email: email });
     if (!user) {
         throw new AppError_1.default(http_status_1.default.NOT_FOUND, 'User not found');
     }
@@ -168,12 +169,31 @@ const resetPassword = (token, payload) => __awaiter(void 0, void 0, void 0, func
     if (!((_b = user === null || user === void 0 ? void 0 : user.verification) === null || _b === void 0 ? void 0 : _b.status)) {
         throw new AppError_1.default(http_status_1.default.FORBIDDEN, 'OTP is not verified yet');
     }
+    // if (payload?.newPassword !== payload?.confirmPassword) {
+    //   throw new AppError(
+    //     httpStatus.BAD_REQUEST,
+    //     'New password and confirm password do not match',
+    //   );
+    // }
+    // const hashedPassword = await bcrypt.hash(
+    //   payload?.newPassword,
+    //   Number(config.bcrypt_salt_rounds),
+    // );
+    // const result = await User.findByIdAndUpdate(decode?.userId, {
+    //   password: hashedPassword,
+    //   passwordChangedAt: new Date(),
+    //   verification: {
+    //     otp: 0,
+    //     status: true,
+    //   },
+    // });
+    // return result;
     if ((payload === null || payload === void 0 ? void 0 : payload.newPassword) !== (payload === null || payload === void 0 ? void 0 : payload.confirmPassword)) {
         throw new AppError_1.default(http_status_1.default.BAD_REQUEST, 'New password and confirm password do not match');
     }
-    const hashedPassword = yield bcrypt_1.default.hash(payload === null || payload === void 0 ? void 0 : payload.newPassword, Number(config_1.default.bcrypt_salt_rounds));
+    // Directly assign the new plain text password without hashing.
     const result = yield user_models_1.User.findByIdAndUpdate(decode === null || decode === void 0 ? void 0 : decode.userId, {
-        password: hashedPassword,
+        password: payload.newPassword,
         passwordChangedAt: new Date(),
         verification: {
             otp: 0,
